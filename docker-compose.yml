@@ -1,0 +1,7 @@
+version: '3'
+services:
+  flyctl:
+    build:
+      context: .
+    image: flyctl
+    container_name: flyctl
