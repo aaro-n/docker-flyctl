@@ -2,7 +2,7 @@
 FROM debian:latest
 
 # 设置工作目录
-WORKDIR /root/
+WORKDIR /home/www
 
 # 设置环境变量
 ENV FLYCTL_INSTALL="/root/.fly"
