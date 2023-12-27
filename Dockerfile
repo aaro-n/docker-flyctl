@@ -1,6 +1,9 @@
 # 使用轻量的基础镜像
 FROM debian:latest
 
+# 设置工作目录
+WORKDIR /root/
+
 # 设置环境变量
 ENV FLYCTL_INSTALL="/root/.fly"
 ENV PATH="$FLYCTL_INSTALL/bin:$PATH"
