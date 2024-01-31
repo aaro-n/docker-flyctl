@@ -55,7 +55,7 @@ jobs:
         DOCKER_TAG=$(cut -d'=' -f2 env_file)
 
         # 推送镜像
-        docker buildx build --platform linux/amd64,linux/arm64,linux/386 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:$DOCKER_TAG" --push .
+     #   docker buildx build --platform linux/amd64,linux/arm64,linux/386 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:$DOCKER_TAG" --push .
         docker buildx build --platform linux/amd64,linux/arm64,linux/386 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest" --push .
 
     - name: 提交推送更新到 GitHub
