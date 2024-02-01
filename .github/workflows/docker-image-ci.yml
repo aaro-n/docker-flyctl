@@ -25,9 +25,20 @@ jobs:
         docker buildx create --use
         docker buildx inspect --bootstrap
 
-    - name: 构建 Docker 镜像并获取 flyctl 版本
+    - name: 构建 Docker 镜像
       run: |
         docker buildx build --platform linux/amd64 -t test-image:latest --no-cache .
+
+    - name: 保存 Docker 镜像
+      run: |
+        docker save test-image:latest -o test-image.tar
+
+    - name: 加载 Docker 镜像
+      run: |
+        docker load -i test-image.tar
+
+    - name: 获取 flyctl 版本并设置环境变量
+      run: |
         export FLYCTL_VERSION=$(docker run --rm test-image:latest flyctl version | sed -n 's/^flyctl v\([^ ]*\).*/\1/p')
         echo "Flyctl 版本: $FLYCTL_VERSION"
         echo "FLYCTL_VERSION=$FLYCTL_VERSION" >> env_file
