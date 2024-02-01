@@ -25,13 +25,15 @@ jobs:
         docker buildx create --use
         docker buildx inspect --bootstrap
 
-    - name: 构建测试镜像
+    - name: 构建 Docker 镜像
       run: |
-        docker buildx build --platform linux/amd64 -t test-image:latest --no-cache .
+        docker buildx build --platform linux/amd64 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:version" --no-cache .
 
     - name: 获取 flyctl 版本并设置环境变量
       run: |
-        docker run --rm test-image:latest flyctl version | sed -n 's/^flyctl v\([^ ]*\).*/\1/p'
+        export FLYCTL_VERSION=$(docker run --rm "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:version" flyctl version | sed -n 's/^flyctl v\([^ ]*\).*/\1/p')
+        echo "Flyctl 版本: $FLYCTL_VERSION"
+        echo "FLYCTL_VERSION=$FLYCTL_VERSION" >> env_file
 
     - name: 将环境变量写入文件
       run: |
@@ -54,9 +56,13 @@ jobs:
         # 从 env_file 中获取版本信息
         DOCKER_TAG=$(cut -d'=' -f2 env_file)
 
+        # 构建镜像
+        docker buildx build --platform linux/amd64 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest" --no-cache .
+        
         # 推送镜像
-        #docker buildx build --platform linux/amd64,linux/arm64,linux/386 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:$DOCKER_TAG" --push .
+        docker buildx build --platform linux/amd64,linux/arm64,linux/386 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:$DOCKER_TAG" --push .
         docker buildx build --platform linux/amd64,linux/arm64,linux/386 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest" --push .
+
 
     - name: 提交推送更新到 GitHub
       if: steps.check-version.outputs.skip != 'true'
@@ -67,4 +73,3 @@ jobs:
         current_time=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
         git commit -m "运行时间 - 北京时间: $current_time"
         git push origin main
-
