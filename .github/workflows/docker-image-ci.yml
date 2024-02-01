@@ -16,26 +16,28 @@ jobs:
     - name: 检出仓库
       uses: actions/checkout@v2
 
+    - name: 登录 Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
     - name: 安装 Docker CLI 插件
       run: |
-        docker run --rm tonistiigi/binfmt:latest --install all
+        docker run --privileged --rm tonistiigi/binfmt:latest --install all
         docker buildx create --use
         docker buildx inspect --bootstrap
 
-    - name: 构建并测试 Docker 镜像
+    - name: 构建 Docker 镜像
       run: |
-        docker buildx build --platform linux/amd64 -t test-image .
-        docker run test-image
+        docker buildx build --platform linux/amd64 -t "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:version" --no-cache --push .
 
-    - name: 获取 flyctl版本并设置环境变量
+    - name: 获取 flyctl 版本并设置环境变量
       run: |
-        export FLYCTL_VERSION=$(docker run --rm test-image flyctl version | sed -n 's/^flyctl v\([^\ ]*\).*/\1/p')
-        echo "Flyctl版本: $FLYCTL_VERSION"
+        export FLYCTL_VERSION=$(docker run --rm "${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:version" flyctl version | sed -n 's/^flyctl v\([^ ]*\).*/\1/p')
+        echo "Flyctl 版本: $FLYCTL_VERSION"
         echo "FLYCTL_VERSION=$FLYCTL_VERSION" >> env_file
 
     - name: 将环境变量写入文件
       run: |
-        echo $(cut -d'=' -f2 <<< $(cat env_file)) > env_file
+        echo $(cut -d'=' -f2 <<< "$(cat env_file)") > env_file
 
     - name: 比较文件并执行相应操作
       id: check-version
@@ -65,5 +67,5 @@ jobs:
         git config --local user.name "GitHub Action"
         git add version
         current_time=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-        git commit -m "运行时间 -北京时间: $current_time"
+        git commit -m "运行时间 - 北京时间: $current_time"
         git push origin main
