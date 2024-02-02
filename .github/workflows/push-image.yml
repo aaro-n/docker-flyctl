@@ -1,9 +1,9 @@
 name: 构建并推送 Docker 镜像
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+  branches:
+    - main
 
 jobs:
   build:
