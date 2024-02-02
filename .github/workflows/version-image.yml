@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
+    env:
+      DOCKER_TAG_TEST: ${{ secrets.DOCKER_TAG_TEST }}
+
     steps:
     - name: 检出仓库
       uses: actions/checkout@v2
@@ -21,7 +24,7 @@ jobs:
 
     - name: 构建用于进行版本对比的镜像
       run: |
-        docker buildx build --platform linux/amd64 -t "${{ secrets.DOCKER_USERNAME_TEST }}/${{ secrets.DOCKER_IMAGE_TEST }}:${{ env.DOCKER_TAG_TEST }}" --no-cache --push . 
+        docker buildx build --platform linux/amd64 -t "${{ secrets.DOCKER_USERNAME_TEST }}/${{ secrets.DOCKER_IMAGE_TEST }}:${{ env.DOCKER_TAG_TEST }}" --no-cache --push .
 
     - name: 将运行时间推送更新到 GitHub
       run: |
@@ -32,3 +35,4 @@ jobs:
         current_time=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
         git commit -m "运行时间 - 北京时间: $current_time"
         git push origin main
+
