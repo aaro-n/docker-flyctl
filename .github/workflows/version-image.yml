@@ -2,7 +2,7 @@ name: 构建并推送用于进行版本对比的 Docker 镜像
 
 on:
   schedule:
-      - cron: "*/15 * * * *"
+      - cron: "3 */12 * * *"
 
 jobs:
   build:
