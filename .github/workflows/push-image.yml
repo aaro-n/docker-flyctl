@@ -25,9 +25,9 @@ jobs:
         docker buildx create --use
         docker buildx inspect --bootstrap
 
-    - name: 获取 flyctl 版本并设置环境变量
+     - name: 获取 flyctl 版本并设置环境变量
       run: |
-        export FLYCTL_VERSION=$(docker run --rm testimagess/test:flyctl flyctl version | sed -n 's/^flyctl v\([^ ]*\).*/\1/p')
+        export FLYCTL_VERSION=$(docker run --rm "${{ secrets.DOCKER_USERNAME_TEST }}/${{ secrets.DOCKER_IMAGE_TEST }}:${{ secrets.DOCKER_TAG_TEST }}" flyctl version | sed -n 's/^flyctl v\([^ ]*\).*/\1/p')
         echo "Flyctl 版本: $FLYCTL_VERSION"
         echo "FLYCTL_VERSION=$FLYCTL_VERSION" >> env_file
 
