@@ -1,4 +1,4 @@
-name: 构建并推送 Docker 镜像
+name: 构建并推送用于进行版本对比的 Docker 镜像
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
 
     - name: 构建用于进行版本对比的镜像
       run: |
-        docker buildx build --platform linux/amd64 -t "${{ secrets.DOCKER_USERNAME_TEST }}/${{ secrets.DOCKER_IMAGE_TEST }}:$DOCKER_TAG_TEST" --no-cache --push . 
+        docker buildx build --platform linux/amd64 -t "${{ secrets.DOCKER_USERNAME_TEST }}/${{ secrets.DOCKER_IMAGE_TEST }}:${{ env.DOCKER_TAG_TEST }}" --no-cache --push . 
 
     - name: 将运行时间推送更新到 GitHub
       run: |
