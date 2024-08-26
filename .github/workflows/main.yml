@@ -71,5 +71,13 @@ jobs:
         git commit -m "运行时间 - 北京时间: $current_time"
         git push origin main
 
-
+    - name: 将运行时间推送更新到 GitHub
+      run: |
+        echo $(date +"%Y-%m-%d %H:%M:%S") > time
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add time
+        current_time=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
+        git commit -m "运行时间 - 北京时间: $current_time"
+        git push origin main
 
