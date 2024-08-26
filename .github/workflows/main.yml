@@ -16,8 +16,8 @@ jobs:
     - name: 检出仓库
       uses: actions/checkout@v2
 
-    - name: 构建用于提取Nginx版本的镜像
-        run: docker build -t flyctl-test -f Dockerfile-flyctl .
+    - name: 构建用于提取flyctl版本的镜像
+      run: docker build -t flyctl-test -f Dockerfile-flyctl .
 
     - name: 获取 flyctl 版本并设置环境变量
       run: |
