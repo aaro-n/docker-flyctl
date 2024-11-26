@@ -16,12 +16,10 @@ jobs:
     - name: 检出仓库
       uses: actions/checkout@v2
 
-    - name: 构建用于提取flyctl版本的镜像
-      run: docker build -t flyctl-test -f Dockerfile-flyctl .
-
-    - name: 获取 flyctl 版本并设置环境变量
+    - name: 获取 flyctl 最新版本
+      id: get-version
       run: |
-        export FLYCTL_VERSION=$(docker run --rm flyctl-test flyctl version | sed -n 's/^flyctl v\([^ ]*\).*/\1/p')
+        FLYCTL_VERSION=$(curl -s https://api.github.com/repos/superfly/flyctl/releases/latest | jq -r '.tag_name')
         echo "Flyctl 版本: $FLYCTL_VERSION"
         echo "FLYCTL_VERSION=$FLYCTL_VERSION" >> env_file
 
@@ -80,4 +78,3 @@ jobs:
         current_time=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
         git commit -m "运行时间 - 北京时间: $current_time"
         git push origin main
-
